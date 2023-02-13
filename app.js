@@ -36,17 +36,26 @@ app.post('/api/stuff', (req, res, next) => {
     });
 
 
-// requete PUT
-// utilisation de la methode: .updateOne() pour recupérer l'obj avec l'ID correspondant à la requete
+// route PUT
+// utilisation de la methode: .updateOne() pour modifier un Thing dans la DB 
+// la methode récupérer le Thing avec l'id renseigné et Update avec les données avec les infos précisées dans le 2e param
 app.put('/api/stuff/:id', (req, res, next) => {
     Thing.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id }) 
         .then(() => res.status(200).json({ message: 'Objet modifié !'}))
         .catch(error => res.status(400).json({ error }));
 });
 
+//route DELETE
+// Utilisation de la methode: .deleteOne()
+app.delete('/api/stuff/:id', (req, res, next) => {
+    Thing.deleteOne({ _id: req.params.id })
+      .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+      .catch(error => res.status(400).json({ error }));
+  });
 
-//requete GET avec URL dynamique: ':id'
-//Utilisation de la methode: .findOne() pour chercher UN SEUL OBJ
+
+//route GET avec URL dynamique: ':id'
+//Utilisation de la methode: .findOne() pour chercher UN SEUL OBJ dans la DB
 app.get('/api/stuff/:id' , (req,res, next) => {
     Thing.findOne( {_id: req.params.id} )
     .then(thing => res.status(200).json(thing))
