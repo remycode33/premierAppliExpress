@@ -22,19 +22,25 @@ app.use((req, res, next) => {
 });
 
 app.post('/api/stuff', (req, res, next) => {
-    delete req.body._id;
+    delete req.body._id; // on supprime le champs id car il est cré direct par MongoDB
     const thing = new Thing({ // new instance de Thing
-      ...req.body  //opérateur spread
+      ...req.body  //opérateur spread pour copier les élément de l'obj req.body (et donc evite d'avoir a rerenseigner le champs et la valeur : title : req.body.title)
     });
     thing.save() // le modèle dispose d'une methode pour save sa Thing dans la data base
-      .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-      .catch(error => res.status(400).json({ error }));
-  });
+      .then(() => res.status(201).json({ message: 'Objet enregistré !'})) // on renvoie une response à la frontend pour eviter l'expiration de la req
+      .catch(error => res.status(400).json({ error }))
+    });
+
+app.get('/api/stuff/:id' , (req,res, next) => {// ':id' on dit à express que cest un parametre de route dynamique
+    Thing.findOne( {_id: req.params.id} ) //methode pour chercher une seul obj
+    .then(thing => res.status(200).json(thing))
+    .catch(error => res.status(404).json( { error }))
+}); 
 
 app.use('/api/stuff', (req, res, next) => {
 Thing.find() // on récupère la liste complète des thing 
     .then(things => res.status(200).json(things))
-    .catch(error => res.status(400).json({ error }));
+    .catch(error => res.status(400).json({ error })); //raccourci de {error :error}
 });
 
 module.exports = app;
