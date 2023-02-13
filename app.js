@@ -21,24 +21,41 @@ app.use((req, res, next) => {
   next();
 });
 
+//requete POST
+// on supprime le champs id car il est cré direct par MongoDB
+// new instance de Thing
+// Utilisation de la methode: .save() pour save la Thing dans la data base
 app.post('/api/stuff', (req, res, next) => {
-    delete req.body._id; // on supprime le champs id car il est cré direct par MongoDB
-    const thing = new Thing({ // new instance de Thing
+    delete req.body._id; 
+    const thing = new Thing({ 
       ...req.body  //opérateur spread pour copier les élément de l'obj req.body (et donc evite d'avoir a rerenseigner le champs et la valeur : title : req.body.title)
     });
-    thing.save() // le modèle dispose d'une methode pour save sa Thing dans la data base
+    thing.save() 
       .then(() => res.status(201).json({ message: 'Objet enregistré !'})) // on renvoie une response à la frontend pour eviter l'expiration de la req
       .catch(error => res.status(400).json({ error }))
     });
 
-app.get('/api/stuff/:id' , (req,res, next) => {// ':id' on dit à express que cest un parametre de route dynamique
-    Thing.findOne( {_id: req.params.id} ) //methode pour chercher une seul obj
+
+// requete PUT
+// utilisation de la methode: .updateOne() pour recupérer l'obj avec l'ID correspondant à la requete
+app.put('/api/stuff/:id', (req, res, next) => {
+    Thing.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id }) 
+        .then(() => res.status(200).json({ message: 'Objet modifié !'}))
+        .catch(error => res.status(400).json({ error }));
+});
+
+
+//requete GET avec URL dynamique: ':id'
+//Utilisation de la methode: .findOne() pour chercher UN SEUL OBJ
+app.get('/api/stuff/:id' , (req,res, next) => {
+    Thing.findOne( {_id: req.params.id} )
     .then(thing => res.status(200).json(thing))
     .catch(error => res.status(404).json( { error }))
 }); 
 
+// Utilisation de la methode: .find() pour récupère la liste complète des thing 
 app.use('/api/stuff', (req, res, next) => {
-Thing.find() // on récupère la liste complète des thing 
+Thing.find()
     .then(things => res.status(200).json(things))
     .catch(error => res.status(400).json({ error })); //raccourci de {error :error}
 });
