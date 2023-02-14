@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -26,5 +27,6 @@ app.use((req, res, next) => {
 
 app.use('/api/stuff', stuffRoutes)  // la logique des routes est importé ici
 app.use('/api/auth', userRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;
