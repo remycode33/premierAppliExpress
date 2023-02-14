@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 
 const stuffRoutes = require('./routes/stuff');
 
+const userRoutes = require('./routes/user');
+
 const app = express();
 
 
@@ -13,7 +15,7 @@ mongoose.connect('mongodb+srv://remycode33:remycode33@cluster0.cgajaww.mongodb.n
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-app.use(express.json());//permet de recupérer la requet ensuite (Express prendra toutes les req qui ont Content-type : application/json et met à dispo leur body dans l'obj req)
+app.use(express.json());// (eq à bodyparcer())permet de recupérer la requet ensuite (Express prendra toutes les req qui ont Content-type : application/json et met à dispo leur body dans l'obj req)
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,5 +25,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/stuff', stuffRoutes)  // la logique des routes est importé ici
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
